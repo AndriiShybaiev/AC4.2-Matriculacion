@@ -11,16 +11,21 @@ initializeIcons();
 interface EnrolListProps {
     student?: Student;
     onStudentRemoved: (student: Student) => void;
+    onStudentEditing: (student: Student) => void;
 }
 
 function EnrolList(props: EnrolListProps) {
     const [items, setItems] = useState<Student[]>([]);
+
     const handleDelete = (item: Student) => {
         setItems(prevItems => prevItems.filter(i => i.id !== item.id));
         props.onStudentRemoved(item);
     }
+
     const handleEdit = (item: Student) => {
+        props.onStudentEditing(item);
     };
+
     const columns: IColumn[] = [
         { key: 'fname', name: 'Nombre', fieldName: "firstName", minWidth: 90, maxWidth: 200, isResizable: true },
         { key: 'lname', name: 'Apellidos', fieldName: "lastName", minWidth: 90, maxWidth: 200, isResizable: true },
@@ -47,15 +52,26 @@ function EnrolList(props: EnrolListProps) {
             )
         }
     ];
+
     useEffect(() => {
         if(props.student) {
             const currentID = props.student.id;
+            //if no ID - new
             if (currentID == undefined) {
-                const newStudentWithId: Student = {
-                    ...props.student,
-                    id: uuidv4()
-                };
-                setItems((prevItems) => [...prevItems, newStudentWithId]);
+                const student: Student = {...props.student, id: uuidv4()};
+                setItems(prev => [...prev, student]);
+            }
+            //if there is ID - edit
+            else {
+                setItems(prevItems => {
+                    const studentIndex = prevItems.findIndex(item => item.id === currentID);
+                    if (studentIndex !== -1) {
+                        const updatedItems = [...prevItems];
+                        updatedItems[studentIndex] = { ...props.student! };
+                        return updatedItems;
+                    }
+                    return prevItems;
+                });
             }
         }
     }, [props.student]);

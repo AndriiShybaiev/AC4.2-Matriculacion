@@ -10,6 +10,7 @@ function App() {
     const [pgEnrolments, setPGEnrolments] = useState(0);
 
     const [student, setStudent] = useState<Student | undefined>(undefined);
+    const [editingStudent, setEditingStudent] = useState<Student | undefined>(undefined);
 
     const handleChangeEnrolments = (updateEnrolments: number) => {
         program === "UG" ? setUGEnrolments(updateEnrolments) : setPGEnrolments(updateEnrolments);
@@ -80,8 +81,12 @@ function App() {
                 onChangeEnrolments={handleChangeEnrolments}
                 currentEnrolments={selectedEnrolments()}
                 onStudentChanged={handleStudentChange}
+                editingStudent={editingStudent} //etapa5
             />
-            <EnrolList student={student} onStudentRemoved={handleStudentRemoved}// etapa3 lista de estudiantes - pasamos estudiante a la lista, etapa4  - añado onStudentRemoved
+            <EnrolList
+                student={student} // etapa3 lista de estudiantes - pasamos estudiante a la lista
+                onStudentRemoved={handleStudentRemoved}  //etapa4  - añado onStudentRemoved
+                onStudentEditing={setEditingStudent} //  etapa5 - añado onStudentEditing
             />
         </div>
     );
