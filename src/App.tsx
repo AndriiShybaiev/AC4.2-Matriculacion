@@ -29,6 +29,16 @@ function App() {
         setStudent(newStudent);
     };
 
+    //etapa 4 - eliminar estudiante
+    const handleStudentRemoved = (removedStudent: Student) => {
+        // Bajamos contador dependiente de programa del estudiante, no estado de radiobutton actual
+        if (removedStudent.program === "UG") {
+            setUGEnrolments(prev => Math.max(0, prev - 1));
+        } else {
+            setPGEnrolments(prev => Math.max(0, prev - 1));
+        }
+    };
+
     //etapa 3 - lista de estudiantes
     return (
         <div className="App">
@@ -71,7 +81,7 @@ function App() {
                 currentEnrolments={selectedEnrolments()}
                 onStudentChanged={handleStudentChange}
             />
-            <EnrolList student={student} // etapa3 lista de estudiantes - pasamos estudiante a la lista
+            <EnrolList student={student} onStudentRemoved={handleStudentRemoved}// etapa3 lista de estudiantes - pasamos estudiante a la lista, etapa4  - añado onStudentRemoved
             />
         </div>
     );

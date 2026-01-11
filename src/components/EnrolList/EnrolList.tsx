@@ -4,33 +4,49 @@ import {initializeIcons} from "@fluentui/react/lib/Icons";
 import type {Student} from "../../entities/Student.ts";
 import {useEffect, useState} from "react";
 import { v4 as uuidv4 } from 'uuid';
+import {MdDelete, MdEdit} from "react-icons/md";
+import type {IColumn} from "@fluentui/react";
 initializeIcons();
-
-
-const columns = [
-    {key: 'fname', name: 'Nombre', fieldName: "firstName", minWidth: 90, maxWidth: 200, isResizable: true},
-    {key: 'lname', name: 'Apellidos', fieldName: "lastName", minWidth: 90, maxWidth: 200, isResizable: true},
-    {key: 'program', name: 'Estudios', fieldName: "program", minWidth: 60, maxWidth: 200, isResizable: true},
-];
-
-//items de ejemplo
-const items = [];
-for (let i = 1; i < 5; i++) {
-    items.push({
-        key: i,
-        fname: "Nombre de #" + i,
-        lname: "Apellidos de #" + i,
-        program: "UG"
-    });
-}
 
 interface EnrolListProps {
     student?: Student;
-
+    onStudentRemoved: (student: Student) => void;
 }
 
 function EnrolList(props: EnrolListProps) {
     const [items, setItems] = useState<Student[]>([]);
+    const handleDelete = (item: Student) => {
+        setItems(prevItems => prevItems.filter(i => i.id !== item.id));
+        props.onStudentRemoved(item);
+    }
+    const handleEdit = (item: Student) => {
+    };
+    const columns: IColumn[] = [
+        { key: 'fname', name: 'Nombre', fieldName: "firstName", minWidth: 90, maxWidth: 200, isResizable: true },
+        { key: 'lname', name: 'Apellidos', fieldName: "lastName", minWidth: 90, maxWidth: 200, isResizable: true },
+        { key: 'program', name: 'Estudios', fieldName: "program", minWidth: 60, maxWidth: 200, isResizable: true },
+        {
+            key: 'actions',
+            name: 'Acciones',
+            fieldName: 'actions',
+            minWidth: 100,
+            maxWidth: 150,
+            isResizable: true,
+            //etapa 4 - rendering iconos
+            onRender: (item: Student) => (
+                <div>
+                    <MdEdit
+                        style={{ cursor: 'pointer', marginRight: '10px' }}
+                        onClick={() => handleEdit(item)}
+                    />
+                    <MdDelete
+                        style={{ cursor: 'pointer' }}
+                        onClick={() => handleDelete(item)}
+                    />
+                </div>
+            )
+        }
+    ];
     useEffect(() => {
         if(props.student) {
             const currentID = props.student.id;
