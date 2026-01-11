@@ -1,6 +1,6 @@
-import React, {type FormEvent, useEffect, useRef, useState} from 'react';
 import './EnrolmentForm.css';
-import type {Student} from "../../entities/Student.ts";
+import type { Student } from "../../entities/Student";
+import { useEnrolmentFormViewModel } from "./useEnrolmentFormViewModel";
 
 interface EnrolmentFormProps {
     chosenProgram: string;
@@ -11,70 +11,21 @@ interface EnrolmentFormProps {
 }
 
 function EnrolmentForm(props: EnrolmentFormProps) {
-    const nameInputRef = useRef<HTMLInputElement>(null)
+    const vm = useEnrolmentFormViewModel(props);
 
-    const [firstName, setFirstName] = useState(props.editingStudent?.firstName || "");
-    const [lastName, setLastName] = useState(props.editingStudent?.lastName || "");
-    const [welcomeMessage, setWelcomeMessage] = useState("");
-    const [btnTitle, setBtnTitle] = useState("Registrar");
-    const [editingStudentID, setEditingStudentID] = useState<string | undefined>(undefined);
-
-    useEffect(() => {
-        if (props.editingStudent) {
-            setEditingStudentID(props.editingStudent.id);
-            setFirstName(props.editingStudent.firstName);
-            setLastName(props.editingStudent.lastName);
-            setBtnTitle("Actualizar");
-            nameInputRef.current?.focus();
-        }
-    }, [props.editingStudent, setBtnTitle, setEditingStudentID]);
-    
-
-    const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
-        //etapa 5 comprobamos si el boton no "cancelar"
-        const submitter = (event.nativeEvent as SubmitEvent).submitter as HTMLInputElement;
-
-        if (!submitter || submitter.value != "Cancelar") {
-            setWelcomeMessage(`Bienvenido/a ${firstName} ${lastName}`);
-            if (!editingStudentID) {
-                props.onChangeEnrolments(props.currentEnrolments + 1);
-            }
-
-            //etapa 3 lista - creando objeto estudiante
-            const student: Student = {
-                id: editingStudentID,
-                firstName: firstName,
-                lastName: lastName,
-                program: props.chosenProgram
-            };
-            // etapa3 lista pasamos estudiante arriba al App
-            props.onStudentChanged(student);
-        }
-
-
-        // event.currentTarget.reset() //vaciamos el formulario
-        setEditingStudentID(undefined);
-        setFirstName(""); //etapa 5 edicion
-        setLastName("");
-        nameInputRef.current?.focus(); //situamos el cursor en el campo fname
-        event.preventDefault(); //prevenimos recarga al submit
-        setBtnTitle("Registrar");
-        setWelcomeMessage("");
-    };
-
-    //etapa 3 radiobuttons
+    // etapa 3 radiobuttons
     return (
         <div>
-            <form className="enrolForm" onSubmit={handleSubmit}>
+            <form className="enrolForm" onSubmit={vm.handleSubmit}>
                 <h1>Datos del estudiante - {props.chosenProgram}</h1>
 
                 <label>Nombre:</label>
                 <input
                     type="text"
                     name="fname"
-                    onChange={(event) => setFirstName(event.target.value)}
-                    ref={nameInputRef}
-                    value={firstName}
+                    onChange={(event) => vm.setFirstName(event.target.value)}
+                    ref={vm.nameInputRef}
+                    value={vm.firstName}
                 />
                 <br />
 
@@ -82,22 +33,21 @@ function EnrolmentForm(props: EnrolmentFormProps) {
                 <input
                     type="text"
                     name="lname"
-                    onChange={(event) => setLastName(event.target.value)}
-                    value={lastName}
+                    onChange={(event) => vm.setLastName(event.target.value)}
+                    value={vm.lastName}
                 />
                 <br /><br />
-                <div className="button-container">
-                <input type="submit" value={btnTitle} />
 
-                {/* Cancelar button: show only when editing */}
-                {editingStudentID && (
-                    <input
-                        type="submit"
-                        value="Cancelar"
-                    />
-                )}
+                <div className="button-container">
+                    <input type="submit" value={vm.btnTitle} />
+
+                    {/* Cancelar button: show only when editing */}
+                    {vm.editingStudentID && (
+                        <input type="submit" value="Cancelar" />
+                    )}
                 </div>
-                <div className="message">{welcomeMessage}</div>
+
+                <div className="message">{vm.welcomeMessage}</div>
             </form>
         </div>
     );

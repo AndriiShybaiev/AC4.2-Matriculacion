@@ -59,6 +59,7 @@
 
 .enrolForm input[value="Cancelar"] {
     background-color: #666;
+}
 
 .enrolForm input[value="Cancelar"]:hover {
     background-color: #555;

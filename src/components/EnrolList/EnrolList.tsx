@@ -1,11 +1,10 @@
 import "./EnrolList.css";
-import {DetailsList} from "@fluentui/react/lib/DetailsList";
-import {initializeIcons} from "@fluentui/react/lib/Icons";
-import type {Student} from "../../entities/Student.ts";
-import {useEffect, useState} from "react";
-import { v4 as uuidv4 } from 'uuid';
-import {MdDelete, MdEdit} from "react-icons/md";
-import type {IColumn} from "@fluentui/react";
+import { DetailsList, type IColumn } from "@fluentui/react/lib/DetailsList";
+import { initializeIcons } from "@fluentui/react/lib/Icons";
+import { MdDelete, MdEdit } from "react-icons/md";
+import type { Student } from "../../entities/Student";
+import { useEnrolListViewModel } from "./useEnrolListViewModel";
+
 initializeIcons();
 
 interface EnrolListProps {
@@ -15,16 +14,7 @@ interface EnrolListProps {
 }
 
 function EnrolList(props: EnrolListProps) {
-    const [items, setItems] = useState<Student[]>([]);
-
-    const handleDelete = (item: Student) => {
-        setItems(prevItems => prevItems.filter(i => i.id !== item.id));
-        props.onStudentRemoved(item);
-    }
-
-    const handleEdit = (item: Student) => {
-        props.onStudentEditing(item);
-    };
+    const { items, handleDelete, handleEdit } = useEnrolListViewModel(props);
 
     const columns: IColumn[] = [
         { key: 'fname', name: 'Nombre', fieldName: "firstName", minWidth: 90, maxWidth: 200, isResizable: true },
@@ -37,15 +27,15 @@ function EnrolList(props: EnrolListProps) {
             minWidth: 100,
             maxWidth: 150,
             isResizable: true,
-            //etapa 4 - rendering iconos
+            // etapa 4 - rendering iconos
             onRender: (item: Student) => (
-                <div>
+                <div style={{ display: 'flex', gap: '10px' }}>
                     <MdEdit
-                        style={{ cursor: 'pointer', marginRight: '10px' }}
+                        style={{ cursor: 'pointer', fontSize: '20px' }}
                         onClick={() => handleEdit(item)}
                     />
                     <MdDelete
-                        style={{ cursor: 'pointer' }}
+                        style={{ cursor: 'pointer', fontSize: '20px', color: 'red' }}
                         onClick={() => handleDelete(item)}
                     />
                 </div>
@@ -53,35 +43,11 @@ function EnrolList(props: EnrolListProps) {
         }
     ];
 
-    useEffect(() => {
-        if(props.student) {
-            const currentID = props.student.id;
-            //if no ID - new
-            if (currentID == undefined) {
-                const student: Student = {...props.student, id: uuidv4()};
-                setItems(prev => [...prev, student]);
-            }
-            //if there is ID - edit
-            else {
-                setItems(prevItems => {
-                    const studentIndex = prevItems.findIndex(item => item.id === currentID);
-                    if (studentIndex !== -1) {
-                        const updatedItems = [...prevItems];
-                        updatedItems[studentIndex] = { ...props.student! };
-                        return updatedItems;
-                    }
-                    return prevItems;
-                });
-            }
-        }
-    }, [props.student]);
     return (
         <div className="enrolList">
             <DetailsList items={items} columns={columns} />
         </div>
-    )
+    );
 }
-
-
 
 export default EnrolList;
