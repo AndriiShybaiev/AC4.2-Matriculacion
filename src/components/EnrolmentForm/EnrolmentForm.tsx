@@ -86,7 +86,7 @@ function EnrolmentForm(props: EnrolmentFormProps) {
                     value={lastName}
                 />
                 <br /><br />
-
+                <div className="button-container">
                 <input type="submit" value={btnTitle} />
 
                 {/* Cancelar button: show only when editing */}
@@ -96,8 +96,8 @@ function EnrolmentForm(props: EnrolmentFormProps) {
                         value="Cancelar"
                     />
                 )}
-
-                <label className="message">{welcomeMessage}</label>
+                </div>
+                <div className="message">{welcomeMessage}</div>
             </form>
         </div>
     );
