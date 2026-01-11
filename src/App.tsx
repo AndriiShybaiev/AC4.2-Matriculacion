@@ -1,41 +1,64 @@
 import './App.css'
 import EnrolmentForm from "./components/EnrolmentForm/EnrolmentForm.tsx";
-import React, { useState } from "react";
+import React, {type ChangeEvent, useState} from "react";
 
 function App() {
     const [program, setProgram] = useState("UG");
-    const [enrolments, setEnrolments] = useState(0);
+    const [ugEnrolments, setUGEnrolments] = useState(0);
+    const [pgEnrolments, setPGEnrolments] = useState(0);
 
     const handleChangeEnrolments = (updateEnrolments: number) => {
-        setEnrolments(updateEnrolments);
+        program === "UG" ? setUGEnrolments(updateEnrolments) : setPGEnrolments(updateEnrolments);
     };
 
-    const handleChangeProgram = (event: React.ChangeEvent<HTMLSelectElement>) => {
-        setProgram(event.target.value);
+    const handleChangeProgram = (event: ChangeEvent<HTMLLIElement>) => {
+        const input = event.target as HTMLInputElement;
+        setProgram(input.value);
     };
-    //etapa 2 - formulario con select de tipo de estudios
+
+    const selectedEnrolments = ():number => {
+        return program == "UG" ? ugEnrolments : pgEnrolments;
+    }
+    //etapa 3 - formulario con radio buttons
     return (
         <div className="App">
             <div className="programs">
-                <label>Selecciona el tipo de estudio:</label>
-                <select
-                    className="appDropDowns"
-                    onChange={handleChangeProgram}
-                    value={program}
-                >
-                    <option value="UG">Grado</option>
-                    <option value="PG">Postgrado</option>
-                </select>
+                <ul className="ulEnrol">
+                    <li className="parentLabels"
+                        onChange={handleChangeProgram}>
+                        <label>
+                            <input
+                                type="radio"
+                                value="UG"
+                                name="programGroup"
+                                defaultChecked
+                            />
+                            Grado
+                        </label>
+                        <label>
+                            <input
+                                type="radio"
+                                className="radioSel"
+                                value="PG"
+                                name="programGroup"
+                            />
+                            Postgrado
+                        </label>
+                    </li>
+                    <li>
+                        Matriculaciones actuales: {selectedEnrolments()}
+                    </li>
+                </ul>
             </div>
 
             <div className="enrolments">
-                Matriculaciones actuales: {enrolments}
+                Matriculaciones actuales: {selectedEnrolments()}
             </div>
 
             <EnrolmentForm
                 chosenProgram={program}
-                currentEnrolments={enrolments}
                 onChangeEnrolments={handleChangeEnrolments}
+                currentEnrolments={selectedEnrolments()}
             />
         </div>
     );

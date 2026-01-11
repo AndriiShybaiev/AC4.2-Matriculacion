@@ -1,4 +1,4 @@
-import React, { type FormEvent, useState } from 'react';
+import React, {type FormEvent, useRef, useState} from 'react';
 import './EnrolmentForm.css';
 
 interface EnrolmentFormProps {
@@ -8,16 +8,19 @@ interface EnrolmentFormProps {
 }
 
 function EnrolmentForm(props: EnrolmentFormProps) {
+    const nameInputRef = useRef<HTMLInputElement>(null)
     const [firstName, setFirstName] = useState("");
     const [lastName, setLastName] = useState("");
     const [welcomeMessage, setWelcomeMessage] = useState("");
 
-    const handleSubmit = (event: FormEvent) => {
-        event.preventDefault(); //prevenimos recarga al submit
+    const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
         setWelcomeMessage(`Bienvenido/a ${firstName} ${lastName}`);
         props.onChangeEnrolments(props.currentEnrolments + 1);
+        event.currentTarget.reset() //vaciamos el formulario
+        nameInputRef.current?.focus(); //situamos el cursor en el campo fname
+        event.preventDefault(); //prevenimos recarga al submit
     };
-    //etapa 2
+    //etapa 3 radiobuttons
     return (
         <div>
             <form className="enrolForm" onSubmit={handleSubmit}>
@@ -28,6 +31,7 @@ function EnrolmentForm(props: EnrolmentFormProps) {
                     type="text"
                     name="fname"
                     onBlur={(event) => setFirstName(event.target.value)}
+                    ref={nameInputRef}
                 />
                 <br />
 
