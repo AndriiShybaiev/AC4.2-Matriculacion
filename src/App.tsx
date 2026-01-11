@@ -1,11 +1,15 @@
 import './App.css'
 import EnrolmentForm from "./components/EnrolmentForm/EnrolmentForm.tsx";
 import React, {type ChangeEvent, useState} from "react";
+import EnrolList from "./components/EnrolList/EnrolList.tsx";
+import type {Student} from "./entities/Student.ts";
 
 function App() {
     const [program, setProgram] = useState("UG");
     const [ugEnrolments, setUGEnrolments] = useState(0);
     const [pgEnrolments, setPGEnrolments] = useState(0);
+
+    const [student, setStudent] = useState<Student | undefined>(undefined);
 
     const handleChangeEnrolments = (updateEnrolments: number) => {
         program === "UG" ? setUGEnrolments(updateEnrolments) : setPGEnrolments(updateEnrolments);
@@ -19,7 +23,13 @@ function App() {
     const selectedEnrolments = ():number => {
         return program == "UG" ? ugEnrolments : pgEnrolments;
     }
-    //etapa 3 - formulario con radio buttons
+
+    //para procesar nuevo estudiante
+    const handleStudentChange = (newStudent: Student) => {
+        setStudent(newStudent);
+    };
+
+    //etapa 3 - lista de estudiantes
     return (
         <div className="App">
             <div className="programs">
@@ -59,6 +69,9 @@ function App() {
                 chosenProgram={program}
                 onChangeEnrolments={handleChangeEnrolments}
                 currentEnrolments={selectedEnrolments()}
+                onStudentChanged={handleStudentChange}
+            />
+            <EnrolList student={student} // etapa3 lista de estudiantes - pasamos estudiante a la lista
             />
         </div>
     );
